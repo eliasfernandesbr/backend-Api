@@ -15,7 +15,7 @@ app.get("/projects", (request, response) => {
 });
 
 app.post("/projects", (request, response) => {
-    const {title, owner}= request.body;
+    const {title, owner} = request.body;
     
     const project = { id: uuidv4(), title, owner};
     projects.push(project)
@@ -24,15 +24,25 @@ app.post("/projects", (request, response) => {
 });
 
 app.put("/projects/:id", (request, response) => {
-    const params = request.params;
-    console.log(params);
+    const {id} = request.params;
+    const { title, owner} = request.body;
+    
+    const projectIndex = projects.findIndex(project => project.id === id)
+
+    if(projectIndex < 0){
+      return response.status(400).json({error: "Project Not Found"})
+    }
+
+    const project  = {
+      id,
+      title,
+      owner,
+    };
+
+    projects[projectIndex] =  project;
 
 
-    return response.json([
-        "Projeto 4",
-        "Projeto 2",
-        "Projeto 3"
-    ]);
+    return response.json(project)
   });
 
   app.delete("/projects/:id", (request, response) => {
