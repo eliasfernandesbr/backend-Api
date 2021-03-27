@@ -1,8 +1,8 @@
 const { response, json } = require("express");
 const express = require("express");
-const { v4: uuidv4 } = require("uuid");
-// const {uuid, isUuid } = require("uuidv4");
-const { validate: uuidValidate } = require("uuid");
+const {isUuid} = require ("uuidv4");
+
+const {v4: uuidv4} = require ("uuid")
 
 const app = express();
 app.use(express.json());
@@ -25,16 +25,16 @@ function logRequests(request, response, next) {
 function validateProjectId(request, response, next) {
   const { id } = request.params;
 
-  if (!uuidValidate(id)) {
+  if (!isUuid(id)) {
     return response.status(400).json({ error: "Invalid Project ID" });
   }
 
   return next();
 }
-
 app.use(logRequests);
+app.use("/projects/:id", validateProjectId);
 
-app.get("/projects", validateProjectId, (request, response) => {
+app.get("/projects", (request, response) => {
   console.log("PASSO 3");
   const { title } = request.query;
   const results = title
@@ -44,7 +44,7 @@ app.get("/projects", validateProjectId, (request, response) => {
   return response.json(projects);
 });
 
-app.post("/projects", validateProjectId, (request, response) => {
+app.post("/projects", (request, response) => {
   const { title, owner } = request.body;
 
   const project = { id: uuidv4(), title, owner };
@@ -54,7 +54,7 @@ app.post("/projects", validateProjectId, (request, response) => {
   return response.json(project);
 });
 
-app.put("/projects/:id", validateProjectId, (request, response) => {
+app.put("/projects/:id", (request, response) => {
   const { id } = request.params;
   const { title, owner } = request.body;
 
@@ -75,7 +75,7 @@ app.put("/projects/:id", validateProjectId, (request, response) => {
   return response.json(project);
 });
 
-app.delete("/projects/:id", validateProjectId, (request, response) => {
+app.delete("/projects/:id", (request, response) => {
   const { id } = request.params;
 
   const projectIndex = projects.findIndex((project) => project.id === id);
